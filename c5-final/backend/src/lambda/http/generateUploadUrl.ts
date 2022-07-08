@@ -3,7 +3,7 @@ import 'source-map-support/register'
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import * as middy from 'middy'
 import { cors, httpErrorHandler } from 'middy/middlewares'
-import { generateAttachmentUrl, updateAttachmentUrl } from '../../businessLogic/todos'
+import { generateAttachmentUrl, updateAttachmentUrl } from '../../businessLogic/cars'
 import { getUserId } from '../utils'
 import * as uuid from 'uuid'
 
@@ -13,7 +13,7 @@ export const handler = middy(
     const attachmentId = uuid.v4()
     const uploadUrl = await generateAttachmentUrl(attachmentId)
 
-    await updateAttachmentUrl(getUserId(event), event.pathParameters.todoId, attachmentId)
+    await updateAttachmentUrl(getUserId(event), event.pathParameters.carId, attachmentId)
 
     return {
       statusCode: 200,

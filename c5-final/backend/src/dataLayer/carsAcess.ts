@@ -2,38 +2,38 @@ import * as AWS from 'aws-sdk'
 const AWSXRay = require('aws-xray-sdk')
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
 import { createLogger } from '../utils/logger'
-import { TodoItem } from '../models/TodoItem'
-import { TodoUpdate } from '../models/TodoUpdate';
+import { CarItem } from '../models/CarItem'
+import { CarUpdate } from '../models/CarUpdate';
 
 const XAWS = AWSXRay.captureAWS(AWS)
 
-const logger = createLogger('TodosAccess')
+const logger = createLogger('CarsAccess')
 
-export class TodosAccess {
+export class CarsAccess {
     constructor(
       private readonly docClient: DocumentClient = createDynamoDBClient(),
-      private readonly todosTable = process.env.TODOS_TABLE
+      private readonly carsTable = process.env.CARS_TABLE
     ) {}
   
-    async getTodoItem(userId: string, todoId: string): Promise<TodoItem> {
+    async getCarItem(userId: string, carId: string): Promise<CarItem> {
       return (
         await this.docClient
           .get({
-            TableName: this.todosTable,
+            TableName: this.carsTable,
             Key: {
               userId,
-              todoId
+              carId
             }
           })
           .promise()
-      ).Item as TodoItem
+      ).Item as CarItem
     }
   
-    async getAllTodos(userId: string): Promise<TodoItem[]> {
-      logger.info('Getting all todos')
+    async getAllCars(userId: string): Promise<CarItem[]> {
+      logger.info('Getting all cars')
       const result = await this.docClient
         .query({
-          TableName: this.todosTable,
+          TableName: this.carsTable,
           KeyConditionExpression: 'userId = :userId',
           ExpressionAttributeValues: {
             ':userId': userId
@@ -41,66 +41,65 @@ export class TodosAccess {
         })
         .promise()
   
-      return result.Items as TodoItem[]
+      return result.Items as CarItem[]
     }
   
-    async createTodo(todoItem: TodoItem): Promise<TodoItem> {
-      logger.info('Create a new todo')
+    async createCar(carItem: CarItem): Promise<CarItem> {
+      logger.info('Create a new car')
       await this.docClient
         .put({
-          TableName: this.todosTable,
-          Item: todoItem
+          TableName: this.carsTable,
+          Item: carItem
         })
         .promise()
-      return todoItem
+      return carItem
     }
   
-    async updateTodoItem(userId: string, todoId: string, todoUpdate: TodoUpdate) {
-      logger.info(`Updating todo ${todoId} with ${JSON.stringify(todoUpdate)}`)
+    async updateCarItem(userId: string, carId: string, carUpdate: CarUpdate) {
+      logger.info(`Updating car ${carId} with ${JSON.stringify(carUpdate)}`)
       await this.docClient
         .update({
-          TableName: this.todosTable,
+          TableName: this.carsTable,
           Key: {
             userId,
-            todoId
+            carId
           },
-          UpdateExpression: 'set #name = :name, dueDate = :dueDate, done = :done',
+          UpdateExpression: 'set #name = :name, brand = :brand',
           ExpressionAttributeNames: {
             '#name': 'name'
           },
           ExpressionAttributeValues: {
-            ':name': todoUpdate.name,
-            ':dueDate': todoUpdate.dueDate,
-            ':done': todoUpdate.done
+            ':name': carUpdate.name,
+            ':brand': carUpdate.brand
           }
         })
         .promise()
     }
   
-    async deleteTodoItem(userId: string, todoId: string) {
-      logger.info(`deleting todo ${todoId}`)
+    async deleteCarItem(userId: string, carId: string) {
+      logger.info(`deleting car ${carId}`)
       await this.docClient
         .delete({
-          TableName: this.todosTable,
+          TableName: this.carsTable,
           Key: {
             userId,
-            todoId
+            carId
           }
         })
         .promise()
     }
   
-    async updateAttachmentUrl(userId: string, todoId: string, newUrl: string) {
+    async updateAttachmentUrl(userId: string, carId: string, newUrl: string) {
       logger.info(
-        `Updating ${newUrl} attachment URL for todo ${todoId} in table ${this.todosTable}`
+        `Updating ${newUrl} attachment URL for car ${carId} in table ${this.carsTable}`
       )
   
       await this.docClient
         .update({
-          TableName: this.todosTable,
+          TableName: this.carsTable,
           Key: {
             userId,
-            todoId
+            carId
           },
           UpdateExpression: 'set attachmentUrl = :attachmentUrl',
           ExpressionAttributeValues: {

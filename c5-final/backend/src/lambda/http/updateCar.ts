@@ -4,16 +4,16 @@ import { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda'
 import * as middy from 'middy'
 import { cors, httpErrorHandler } from 'middy/middlewares'
 
-import { updateTodo } from '../../businessLogic/todos'
-import { UpdateTodoRequest } from '../../requests/UpdateTodoRequest'
+import { updateCar } from '../../businessLogic/cars'
+import { UpdateCarRequest } from '../../requests/UpdateCarRequest'
 import { getUserId } from '../utils'
 
 export const handler = middy(
   async (event: APIGatewayProxyEvent): Promise<APIGatewayProxyResult> => {
 
-    const updatedTodo: UpdateTodoRequest = JSON.parse(event.body)
+    const updatedCar: UpdateCarRequest = JSON.parse(event.body)
 
-    await updateTodo(getUserId(event), event.pathParameters.todoId, updatedTodo)
+    await updateCar(getUserId(event), event.pathParameters.carId, updatedCar)
 
     return {
       statusCode: 200,

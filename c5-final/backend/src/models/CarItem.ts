@@ -1,9 +1,8 @@
-export interface TodoItem {
+export interface CarItem {
   userId: string
-  todoId: string
+  carId: string
   createdAt: string
   name: string
-  dueDate: string
-  done: boolean
+  brand: string
   attachmentUrl?: string
 }

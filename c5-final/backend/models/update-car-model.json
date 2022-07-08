@@ -6,17 +6,14 @@
     "name": {
       "type": "string"
     },
-    "dueDate": {
+    "brand": {
       "type": "string"
-    },
-    "done": {
-      "type": "boolean"
     }
   },
   "required": [
     "name",
-    "dueDate",
-    "done"
+    "brand"
+
   ],
   "additionalProperties": false
 }
